@@ -5,28 +5,14 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import androidx.lifecycle.ViewModelProvider
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
 import java.text.DateFormat
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
-    var json = """
-        {
-            "id": "618",
-            "author": "Mika Ruusunen",
-            "width": 2509,
-            "height": 1673,
-            "url": "https://unsplash.com/photos/ypVM8PnygUo",
-            "download_url": "https://picsum.photos/id/618/2509/1673"
-        }
-    """.trimIndent()
-
     lateinit var date: TextView
 
     lateinit var image1Details: TextView
@@ -41,6 +27,11 @@ class MainActivity : AppCompatActivity() {
     lateinit var image3: ImageView
     lateinit var image3Author: TextView
 
+    val viewModel: SharedViewModel by lazy {
+        ViewModelProvider(this).get(SharedViewModel::class.java)
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -50,25 +41,15 @@ class MainActivity : AppCompatActivity() {
 
         initializeImages()
 
-        val moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://picsum.photos/")
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .build()
-
-        val appCompatActivity: LoremPictureDetailsService = retrofit.create(LoremPictureDetailsService::class.java)
-
-        appCompatActivity.getPictureDetailsById().enqueue(object : Callback<Any>{
-
-            override fun onResponse(call: Call<Any>, response: Response<Any>) {
-                Log.i("MainActivity",response.toString())
+        viewModel.refreshDetails(0)
+        viewModel.detailsByLiveData.observe(this){
+            response ->
+            if(response == null){
+                Log.i("getPictureDetailsById:","FAILED")
+                return@observe
             }
-
-            override fun onFailure(call: Call<Any>, t: Throwable) {
-                Log.i("MainActivity",t.message ?: "Null")
-            }
-        })
+            response.let { Log.d("author:", it.author) }
+        }
 
     }
 

@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
+    tools:context=".MainActivity">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:paddingTop="6dp"
     android:paddingBottom="16dp"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
     android:orientation="vertical">
-
     <TextView
         android:id="@+id/date"
         android:layout_width="match_parent"
@@ -40,8 +42,8 @@
 
     <ImageView
         android:id="@+id/image1"
-        android:layout_width="350dp"
-        android:layout_height="180dp"
+        android:layout_width="400dp"
+        android:layout_height="300dp"
 
         android:padding="1dp"
         android:scaleType="centerCrop"
@@ -74,8 +76,8 @@
 
     <ImageView
         android:id="@+id/image2"
-        android:layout_width="350dp"
-        android:layout_height="180dp"
+        android:layout_width="400dp"
+        android:layout_height="300dp"
 
         android:padding="1dp"
         android:scaleType="centerCrop"
@@ -83,7 +85,7 @@
         android:background="@drawable/border_image"
 
         android:layout_gravity="center"
-        tools:src="@drawable/image2test"/>
+        tools:src="@drawable/image2test" />
     <TextView
         android:id="@+id/image2_author"
         android:layout_width="350dp"
@@ -104,8 +106,8 @@
         android:textColor="@color/black"/>
     <ImageView
         android:id="@+id/image3"
-        android:layout_width="350dp"
-        android:layout_height="180dp"
+        android:layout_width="400dp"
+        android:layout_height="300dp"
 
         android:padding="1dp"
         android:scaleType="centerCrop"
@@ -123,6 +125,7 @@
         android:gravity="center"
         android:textSize="12sp"
         android:textColor="@color/black"/>
-
-
 </LinearLayout>
+
+
+</ScrollView>

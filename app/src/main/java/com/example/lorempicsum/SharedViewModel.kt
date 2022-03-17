@@ -9,7 +9,6 @@ import kotlinx.coroutines.launch
 class SharedViewModel:ViewModel() {
     private val repository = SharedRepository()
 
-
     private val _detailsByIdLiveData = MutableLiveData<GetDetailsByIdResponse?>()
     //Do not allow layer listening to live data to change it
     val detailsByLiveData: LiveData<GetDetailsByIdResponse?> = _detailsByIdLiveData

@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
+import com.squareup.picasso.Picasso
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -66,7 +67,8 @@ class MainActivity : AppCompatActivity() {
         image2Details = findViewById(R.id.image2_details)
         image3Details = findViewById(R.id.image3_details)
 
-        image1.setImageResource(R.drawable.image1test)
+        Picasso.get().load("https://picsum.photos/id/0/200/300.jpg").into(image1);
+        //image1.setImageResource(R.drawable.image1test)
         image2.setImageResource(R.drawable.image2test)
         image3.setImageResource(R.drawable.image3test)
 

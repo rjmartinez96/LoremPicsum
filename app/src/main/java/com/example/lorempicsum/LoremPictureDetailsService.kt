@@ -10,4 +10,6 @@ interface LoremPictureDetailsService {
     suspend fun getPictureDetailsById(
         @Path("id") id: Int
     ): Response<GetDetailsByIdResponse>
+
+
 }

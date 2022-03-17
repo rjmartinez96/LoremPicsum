@@ -5,10 +5,10 @@ class SharedRepository {
     suspend fun getDetailsById(id:Int):GetDetailsByIdResponse?{
         val request = NetworkLayer.client.getDetailsById(id)
 
-        if(request.isSuccessful){
-            return request.body()!!
+        if(request.failed || !request.isSuccessful){
+            return null
         }
 
-        return null
+        return request.body
     }
 }

@@ -1,6 +1,5 @@
 package com.example.lorempicsum
 
-import okhttp3.Headers
 import retrofit2.Response
 import java.lang.Exception
 

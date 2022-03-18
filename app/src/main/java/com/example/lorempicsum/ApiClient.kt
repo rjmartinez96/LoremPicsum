@@ -1,6 +1,6 @@
 package com.example.lorempicsum
 
-import retrofit2.Call
+import okhttp3.Request
 import retrofit2.Response
 import java.lang.Exception
 

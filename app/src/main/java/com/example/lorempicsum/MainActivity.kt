@@ -1,17 +1,17 @@
 package com.example.lorempicsum
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.squareup.picasso.Picasso
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import okhttp3.*
+import java.io.IOException
 import java.text.DateFormat
 import java.util.*
+
 
 class MainActivity : AppCompatActivity() {
     lateinit var date: TextView
@@ -32,7 +32,6 @@ class MainActivity : AppCompatActivity() {
         ViewModelProvider(this).get(SharedViewModel::class.java)
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -52,6 +51,24 @@ class MainActivity : AppCompatActivity() {
             response.let { Log.d("author:", it.author) }
         }
 
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url("https://picsum.photos/400/400")
+            .build()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                e.printStackTrace()
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                response.use {
+                    if (!response.isSuccessful) throw IOException("Unexpected code $response")
+
+                    println(response.header("picsum-id").toString())
+
+                }
+            }
+        })
     }
 
     private fun initializeImages(){
@@ -67,8 +84,7 @@ class MainActivity : AppCompatActivity() {
         image2Details = findViewById(R.id.image2_details)
         image3Details = findViewById(R.id.image3_details)
 
-        Picasso.get().load("https://picsum.photos/id/0/200/300.jpg").into(image1);
-        //image1.setImageResource(R.drawable.image1test)
+        Picasso.get().load("https://picsum.photos/400/400.jpg").into(image1);
         image2.setImageResource(R.drawable.image2test)
         image3.setImageResource(R.drawable.image3test)
 

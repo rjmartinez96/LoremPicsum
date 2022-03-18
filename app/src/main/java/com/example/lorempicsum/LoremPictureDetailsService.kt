@@ -11,5 +11,4 @@ interface LoremPictureDetailsService {
         @Path("id") id: Int
     ): Response<GetDetailsByIdResponse>
 
-
 }

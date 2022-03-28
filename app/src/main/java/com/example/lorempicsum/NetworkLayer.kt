@@ -3,6 +3,7 @@ package com.example.lorempicsum
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.OkHttpClient
+import okhttp3.Request
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
@@ -11,12 +12,17 @@ object NetworkLayer {
 
     val retrofit = Retrofit.Builder()
         .baseUrl("https://picsum.photos/")
-        .addConverterFactory(MoshiConverterFactory.create(moshi))
+        .addConverterFactory(MoshiConverterFactory.create(moshi).asLenient())
         .build()
 
     val detailsService: LoremPictureDetailsService by lazy {
         retrofit.create(LoremPictureDetailsService::class.java)
     }
 
-    val client = ApiClient(detailsService)
+    val detailsClient = ApiClient(detailsService)
+
+    val okHttpClient = OkHttpClient()
+    val randomRequest = Request.Builder()
+        .url("https://picsum.photos/400/400")
+        .build()
 }

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/image_details"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        tools:text="image id: 123, pixel width: 2342, pixel height: 3323, load time: 11:13 AM"
+        android:gravity="center"
+        android:textSize="12sp"
+        android:textColor="@color/black"/>
+
+
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+
+        android:padding="1dp"
+        android:scaleType="centerCrop"
+        android:cropToPadding="true"
+        android:background="@drawable/border_image"
+
+        android:layout_gravity="center"
+        tools:src="@drawable/image1test"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp" />
+
+    <TextView
+        android:id="@+id/image_author"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        tools:text="Author: Steve Smith"
+        android:gravity="center"
+        android:textSize="12sp"
+        android:textColor="@color/black"/>
+
+</LinearLayout>

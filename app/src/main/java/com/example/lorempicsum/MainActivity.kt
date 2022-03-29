@@ -5,30 +5,23 @@ import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.*
-import okhttp3.*
-import java.io.IOException
 import java.text.DateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class MainActivity : AppCompatActivity() {
     lateinit var date: TextView
 
-    lateinit var image1Details: TextView
-    lateinit var image1: ImageView
-    lateinit var image1Author: TextView
-
-    lateinit var image2Details: TextView
-    lateinit var image2: ImageView
-    lateinit var image2Author: TextView
-
-    lateinit var image3Details: TextView
-    lateinit var image3: ImageView
-    lateinit var image3Author: TextView
+    lateinit var recyclerView: RecyclerView
+    lateinit var pictureDetails: MutableList<GetDetailsByIdResponse>
+    lateinit var pictureAdapter: PictureAdapter
 
     private val viewModel: SharedViewModel by lazy {
         ViewModelProvider(this).get(SharedViewModel::class.java)
@@ -41,68 +34,71 @@ class MainActivity : AppCompatActivity() {
         date = findViewById(R.id.date)
         date.setText(DateFormat.getDateInstance(DateFormat.FULL).format(Calendar.getInstance().time))
 
-        image1 = findViewById(R.id.image1)
-        image2 = findViewById(R.id.image2)
-        image3 = findViewById(R.id.image3)
+        pictureDetails = mutableListOf()
 
-        image1Author = findViewById(R.id.image1_author)
-        image2Author = findViewById(R.id.image2_author)
-        image3Author = findViewById(R.id.image3_author)
+        recyclerView = findViewById(R.id.recycler_view)
+        pictureAdapter = PictureAdapter(this,pictureDetails)
 
-        image1Details = findViewById(R.id.image1_details)
-        image2Details = findViewById(R.id.image2_details)
-        image3Details = findViewById(R.id.image3_details)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = pictureAdapter
 
-        //Picasso.get().load("https://picsum.photos/id/237/400/400.jpg").into(image1);
-        val nums = mutableListOf<Int>()
-        for (i in 1..3){
-            NetworkLayer.okHttpClient.newCall(NetworkLayer.randomRequest).enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    e.printStackTrace()
-                }
-                override fun onResponse(call: Call, response: Response) {
-                    response.use {
-                        if (!response.isSuccessful) throw IOException("Unexpected code $response")
-                        Log.d("Pic ID:",response.header("picsum-id").toString())
-                        nums.add(response.header("picsum-id")?.toInt() ?: 0)
-                        //id = response.header("picsum-id")?.toInt() ?: 0
-                    }
-                }
-            })
-        }
-        Log.d("List",nums.toString())
-        //initializeImage(45,image1,image1Author,image1Details)
-        //initializeImage(67,image2,image2Author,image2Details)
-        //initializeImage(200,image3,image3Author,image3Details)
+
+        //pictureDetails.add(GetDetailsByIdResponse("rj","https://picsum.photos/id/0/300/300",0,"0","",0))
+        //pictureDetails.add(GetDetailsByIdResponse("rj","https://picsum.photos/id/0/300/300",0,"1","",0))
+        //pictureDetails.add(GetDetailsByIdResponse("rj","https://picsum.photos/id/0/300/300",0,"2","",0))
+
+        loadPictures()
+
+//        viewModel.detailsByLiveData.observe(this){ responseList ->
+//            responseList.forEachIndexed { index, response ->
+//                if(response == null){
+//                    Log.i("getPictureDetailsById:","FAILED")
+//                    return@observe
+//                }
+//                response.let {
+//                    Log.d("Pic author:",response.author)
+//                    val newDownloadUrl = "https://picsum.photos/id/"+response.id+"/300/300"
+//                    pictureDetails.add(index, GetDetailsByIdResponse(response.author,newDownloadUrl,
+//                        response.height,response.id,response.url,response.width))
+//                }
+//            }
+//        }
     }
 
-
-    private fun initializeImage(id: Int, image: ImageView, imageAuthor: TextView, imageDetails: TextView){
-        viewModel.refreshDetails(id)
-        viewModel.detailsByLiveData.observe(this){ response ->
-            if(response == null){
-                Log.i("getPictureDetailsById:","FAILED")
-                return@observe
-            }
-            response.let {
-                imageAuthor.text = it.author
-                imageDetails.text = "${it.id},${it.width},${it.height},${DateFormat.getDateInstance(DateFormat.FULL).format(Calendar.getInstance().time)}"
-                Picasso.get().load("${it.downloadUrl}.jpg").into(image);
+    private fun loadPictures(){
+        viewModel.refreshDetails(167,160,0)
+        viewModel.detailsByLiveData.observe(this){ responseList ->
+            responseList.forEachIndexed { index, response ->
+                if(response == null){
+                    Log.i("getPictureDetailsById:","FAILED")
+                    return@observe
+                }
+                response.let {
+                    Log.d("Pic author:",response.author)
+                    pictureDetails.add(index, response)
+                    pictureAdapter.notifyDataSetChanged()
+                }
             }
         }
     }
 
-//    private fun initializeImages(){
-//        Picasso.get().load("https://picsum.photos/400/400.jpg").into(image1);
-//        image2.setImageResource(R.drawable.image2test)
-//        image3.setImageResource(R.drawable.image3test)
-//
-//        image1Author.setText(getString(R.string.author,"Dave Smith"))
-//        image2Author.setText(getString(R.string.author,"Sarah Fisher"))
-//        image3Author.setText(getString(R.string.author,"Jose Aldo"))
-//
-//        image1Details.setText(R.string.details)
-//        image2Details.setText(R.string.details)
-//        image3Details.setText(R.string.details)
-//    }
+    private val ioScope = CoroutineScope(Dispatchers.IO + Job() )
+    fun fireAndForgetNetworkCall() {
+        Log.i("logtag", "-----Async network calls without error handling-----")
+        ioScope.launch {
+            val job = ArrayList<Job>()
+
+            Log.i("logtag", "Making 3 asynchronous network calls")
+            for (i in 1..3){
+                job.add(launch {
+                    Log.i("logtag", "Network Call ID: $i")
+                    val response = NetworkLayer.okHttpClient.newCall(NetworkLayer.randomRequest).execute()
+                    Log.d("Pic ID:",response.header("picsum-id").toString())
+                })
+            }
+
+            job.joinAll()
+            Log.i("logtag", "All Networks calls have completed executing")
+        }
+    }
 }

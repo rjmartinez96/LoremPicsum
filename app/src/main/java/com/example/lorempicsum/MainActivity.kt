@@ -3,7 +3,6 @@ package com.example.lorempicsum
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -85,7 +84,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onListItemClick(position: Int) {
-        Toast.makeText(this, pictureDetails[position].id, Toast.LENGTH_SHORT).show()
+        Log.i("Picture clicked", position.toString())
         getRandomPictures()
     }
 

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.lorempicsum.network.GetDetailsByIdResponse
 import com.squareup.picasso.Picasso
 import java.text.SimpleDateFormat
 import java.util.*
@@ -17,7 +18,10 @@ class PictureAdapter(
     private val onItemClicked: (position: Int) -> Unit
     ) : RecyclerView.Adapter<PictureAdapter.PictureViewHolder>() {
 
-    inner class PictureViewHolder(val view: View, private val onItemClicked: (position: Int) -> Unit) : RecyclerView.ViewHolder(view), View.OnClickListener{
+    inner class PictureViewHolder(
+        view: View,
+        private val onItemClicked: (position: Int) -> Unit
+    ) : RecyclerView.ViewHolder(view), View.OnClickListener{
         val imageDetails = view.findViewById<TextView>(R.id.image_details)
         val image = view.findViewById<ImageView>(R.id.image)
         val imageAuthor = view.findViewById<TextView>(R.id.image_author)
@@ -43,7 +47,7 @@ class PictureAdapter(
     override fun onBindViewHolder(holder: PictureViewHolder, position: Int) {
         val pictureDetails = pictureData[position]
         holder.apply {
-            val dateFormat = SimpleDateFormat("hh:mm a")
+            val dateFormat = SimpleDateFormat("hh:mm a", Locale.US)
             imageDetails.text = context.getString(R.string.details,pictureDetails.id,
                 pictureDetails.width,pictureDetails.height,dateFormat.format(Calendar.getInstance().time))
             Picasso.get().load(pictureDetails.downloadUrl).into(image)

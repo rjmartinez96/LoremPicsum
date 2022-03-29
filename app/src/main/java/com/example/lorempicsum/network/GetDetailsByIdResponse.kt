@@ -1,4 +1,4 @@
-package com.example.lorempicsum
+package com.example.lorempicsum.network
 
 import com.squareup.moshi.Json
 

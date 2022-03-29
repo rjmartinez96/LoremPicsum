@@ -1,4 +1,4 @@
-package com.example.lorempicsum
+package com.example.lorempicsum.network
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -12,7 +12,7 @@ object NetworkLayer {
 
     val retrofit = Retrofit.Builder()
         .baseUrl("https://picsum.photos/")
-        .addConverterFactory(MoshiConverterFactory.create(moshi).asLenient())
+        .addConverterFactory(MoshiConverterFactory.create(moshi))
         .build()
 
     val detailsService: LoremPictureDetailsService by lazy {

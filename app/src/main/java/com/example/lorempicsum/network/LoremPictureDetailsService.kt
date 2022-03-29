@@ -1,4 +1,4 @@
-package com.example.lorempicsum
+package com.example.lorempicsum.network
 
 import retrofit2.Response
 import retrofit2.http.GET

@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.lorempicsum.network.GetDetailsByIdResponse
+import com.example.lorempicsum.network.NetworkLayer
 import kotlinx.coroutines.*
 import java.text.DateFormat
 import java.util.*
@@ -35,12 +37,32 @@ class MainActivity : AppCompatActivity() {
         pictureDetails = mutableListOf()
 
         recyclerView = findViewById(R.id.recycler_view)
-        pictureAdapter = PictureAdapter(this,pictureDetails, {position -> onListItemClick(position)})
+        pictureAdapter = PictureAdapter(this,pictureDetails) { position -> onListItemClick(position) }
 
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = pictureAdapter
 
-        loadPictures(167,0,160)
+        getRandomPictures()
+    }
+
+    private val ioScope = CoroutineScope(Dispatchers.IO + Job())
+    private fun getRandomPictures(){
+        val newIds = mutableListOf<Int>()
+        ioScope.launch {
+            val job = ArrayList<Job>()
+
+            for (i in 1..3){
+                job.add(async {
+                    val response = NetworkLayer.okHttpClient.newCall(NetworkLayer.randomRequest).execute()
+                    newIds.add(response.header("picsum-id")?.toInt() ?: 0)
+                    Log.d("Pic id retrieved",response.header("picsum-id").toString())
+                })
+            }
+
+            job.joinAll()
+            Log.i("logtag", "All  calls have completed executing")
+            runOnUiThread{loadPictures(newIds[0],newIds[1],newIds[2])}
+        }
     }
 
     private fun loadPictures(id1: Int, id2: Int, id3: Int){
@@ -52,8 +74,10 @@ class MainActivity : AppCompatActivity() {
                     return@observe
                 }
                 response.let {
-                    Log.d("Pic author:",response.author)
-                    pictureDetails.add(index, response)
+                    Log.d("Pic loaded",response.id)
+                    if(pictureDetails.size < 3){
+                        pictureDetails.add(response)
+                    } else pictureDetails.set(index, response)
                     pictureAdapter.notifyItemChanged(index)
                 }
             }
@@ -62,25 +86,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun onListItemClick(position: Int) {
         Toast.makeText(this, pictureDetails[position].id, Toast.LENGTH_SHORT).show()
+        getRandomPictures()
     }
 
-    private val ioScope = CoroutineScope(Dispatchers.IO + Job() )
-    fun fireAndForgetNetworkCall() {
-        Log.i("logtag", "-----Async network calls without error handling-----")
-        ioScope.launch {
-            val job = ArrayList<Job>()
-
-            Log.i("logtag", "Making 3 asynchronous network calls")
-            for (i in 1..3){
-                job.add(launch {
-                    Log.i("logtag", "Network Call ID: $i")
-                    val response = NetworkLayer.okHttpClient.newCall(NetworkLayer.randomRequest).execute()
-                    Log.d("Pic ID:",response.header("picsum-id").toString())
-                })
-            }
-
-            job.joinAll()
-            Log.i("logtag", "All Networks calls have completed executing")
-        }
-    }
 }

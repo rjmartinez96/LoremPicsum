@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Lorem Picsum</string>
     <string name="author">Author: %s</string>
-    <string name="details">image id, pixel width, pixel height, load time</string>
+    <string name="details">ID: %s, Width: %d, Height: %d, Time loaded: %s</string>
 </resources>

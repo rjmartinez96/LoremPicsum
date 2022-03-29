@@ -2,14 +2,12 @@ package com.example.lorempicsum
 
 import android.os.Bundle
 import android.util.Log
-import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.squareup.picasso.Picasso
 import kotlinx.coroutines.*
 import java.text.DateFormat
 import java.util.*
@@ -37,49 +35,33 @@ class MainActivity : AppCompatActivity() {
         pictureDetails = mutableListOf()
 
         recyclerView = findViewById(R.id.recycler_view)
-        pictureAdapter = PictureAdapter(this,pictureDetails)
+        pictureAdapter = PictureAdapter(this,pictureDetails, {position -> onListItemClick(position)})
 
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = pictureAdapter
 
-
-        //pictureDetails.add(GetDetailsByIdResponse("rj","https://picsum.photos/id/0/300/300",0,"0","",0))
-        //pictureDetails.add(GetDetailsByIdResponse("rj","https://picsum.photos/id/0/300/300",0,"1","",0))
-        //pictureDetails.add(GetDetailsByIdResponse("rj","https://picsum.photos/id/0/300/300",0,"2","",0))
-
-        loadPictures()
-
-//        viewModel.detailsByLiveData.observe(this){ responseList ->
-//            responseList.forEachIndexed { index, response ->
-//                if(response == null){
-//                    Log.i("getPictureDetailsById:","FAILED")
-//                    return@observe
-//                }
-//                response.let {
-//                    Log.d("Pic author:",response.author)
-//                    val newDownloadUrl = "https://picsum.photos/id/"+response.id+"/300/300"
-//                    pictureDetails.add(index, GetDetailsByIdResponse(response.author,newDownloadUrl,
-//                        response.height,response.id,response.url,response.width))
-//                }
-//            }
-//        }
+        loadPictures(167,0,160)
     }
 
-    private fun loadPictures(){
-        viewModel.refreshDetails(167,160,0)
+    private fun loadPictures(id1: Int, id2: Int, id3: Int){
+        viewModel.refreshDetails(id1,id2,id3)
         viewModel.detailsByLiveData.observe(this){ responseList ->
             responseList.forEachIndexed { index, response ->
                 if(response == null){
-                    Log.i("getPictureDetailsById:","FAILED")
+                    Log.e("getPictureDetailsById:","FAILED")
                     return@observe
                 }
                 response.let {
                     Log.d("Pic author:",response.author)
                     pictureDetails.add(index, response)
-                    pictureAdapter.notifyDataSetChanged()
+                    pictureAdapter.notifyItemChanged(index)
                 }
             }
         }
+    }
+
+    private fun onListItemClick(position: Int) {
+        Toast.makeText(this, pictureDetails[position].id, Toast.LENGTH_SHORT).show()
     }
 
     private val ioScope = CoroutineScope(Dispatchers.IO + Job() )

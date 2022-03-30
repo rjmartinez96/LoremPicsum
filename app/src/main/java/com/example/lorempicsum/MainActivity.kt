@@ -40,29 +40,11 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = pictureAdapter
 
-        getRandomPictures()
+        viewModel.getRandomIds(this)
     }
 
-    private val ioScope = CoroutineScope(Dispatchers.IO + Job())
-    private fun getRandomPictures(){
-        val newIds = mutableListOf<Int>()
-        ioScope.launch {
-            val job = ArrayList<Job>()
-
-            for (i in 1..3){
-                job.add(async {
-                    val response = NetworkLayer.okHttpClient.newCall(NetworkLayer.randomRequest).execute()
-                    newIds.add(response.header("picsum-id")?.toInt() ?: 0)
-                })
-            }
-
-            job.joinAll()
-            runOnUiThread{loadPictures(newIds[0],newIds[1],newIds[2])}
-        }
-    }
-
-    private fun loadPictures(id1: Int, id2: Int, id3: Int){
-        viewModel.refreshDetails(id1,id2,id3)
+    fun loadPictures(newIds: MutableList<Int>){
+        viewModel.refreshDetails(newIds[0],newIds[1],newIds[2])
 
         viewModel.detailsByLiveData.observe(this, object: Observer<List<GetDetailsByIdResponse?>> {
             override fun onChanged(responseList: List<GetDetailsByIdResponse?>) {
@@ -82,7 +64,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onListItemClick(position: Int) {
-        getRandomPictures()
+        viewModel.getRandomIds(this)
     }
 
 }

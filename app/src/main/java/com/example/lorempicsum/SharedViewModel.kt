@@ -6,10 +6,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.lorempicsum.network.GetDetailsByIdResponse
+import com.example.lorempicsum.network.NetworkLayer
 import com.example.lorempicsum.network.SharedRepository
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import java.util.ArrayList
 
 class SharedViewModel:ViewModel() {
     private val repository = SharedRepository()
@@ -35,6 +35,24 @@ class SharedViewModel:ViewModel() {
             task.awaitAll()
 
             _detailsByIdLiveData.postValue(list)
+        }
+    }
+
+    fun getRandomIds(activity: MainActivity){
+        val newIds = mutableListOf<Int>()
+        val ioScope = CoroutineScope(Dispatchers.IO + Job())
+        ioScope.launch {
+            val job = ArrayList<Job>()
+
+            for (i in 1..3){
+                job.add(async {
+                    val response = NetworkLayer.okHttpClient.newCall(NetworkLayer.randomRequest).execute()
+                    newIds.add(response.header("picsum-id")?.toInt() ?: 0)
+                })
+            }
+
+            job.joinAll()
+            activity.runOnUiThread{activity.loadPictures(newIds)}
         }
     }
 

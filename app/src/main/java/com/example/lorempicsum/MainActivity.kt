@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = pictureAdapter
 
-        onListItemClick(0)
+        getRandomPictures()
     }
 
     private val ioScope = CoroutineScope(Dispatchers.IO + Job())

@@ -50,7 +50,8 @@ class PictureAdapter(
             val dateFormat = SimpleDateFormat("hh:mm a", Locale.US)
             imageDetails.text = context.getString(R.string.details,pictureDetails.id,
                 pictureDetails.width,pictureDetails.height,dateFormat.format(Calendar.getInstance().time))
-            Picasso.get().load(pictureDetails.downloadUrl).into(image)
+            val newImage = "https://picsum.photos/id/"+pictureDetails.id+"/300/300"
+            Picasso.get().load(newImage).into(image)
             imageAuthor.text = context.getString(R.string.author,pictureDetails.author)
         }
     }

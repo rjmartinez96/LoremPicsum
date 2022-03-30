@@ -1,7 +1,6 @@
 package com.example.lorempicsum
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.appcompat.app.AppCompatActivity
@@ -54,12 +53,10 @@ class MainActivity : AppCompatActivity() {
                 job.add(async {
                     val response = NetworkLayer.okHttpClient.newCall(NetworkLayer.randomRequest).execute()
                     newIds.add(response.header("picsum-id")?.toInt() ?: 0)
-                    Log.d("Pic id retrieved",response.header("picsum-id").toString())
                 })
             }
 
             job.joinAll()
-            Log.i("logtag", "All  calls have completed executing")
             runOnUiThread{loadPictures(newIds[0],newIds[1],newIds[2])}
         }
     }
@@ -69,15 +66,11 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.detailsByLiveData.observe(this, object: Observer<List<GetDetailsByIdResponse?>> {
             override fun onChanged(responseList: List<GetDetailsByIdResponse?>) {
-                viewModel.detailsByLiveData.removeObserver(this)
-                Log.d("Pics loaded",responseList.toString())
                 responseList.forEachIndexed { index, response ->
                     if(response == null){
-                        Log.e("getPictureDetailsById:","FAILED")
                         return
                     }
                     response.let {
-                        Log.d("Pic loaded",response.id)
                         if(pictureDetails.size < 3){
                             pictureDetails.add(response)
                         } else pictureDetails.set(index, response)
@@ -89,7 +82,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onListItemClick(position: Int) {
-        Log.i("Picture clicked", position.toString())
         getRandomPictures()
     }
 

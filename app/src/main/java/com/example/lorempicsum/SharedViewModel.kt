@@ -21,7 +21,6 @@ class SharedViewModel:ViewModel() {
     fun refreshDetails(id1: Int,id2: Int,id3: Int){
         val list = mutableListOf<GetDetailsByIdResponse?>()
         viewModelScope.launch {
-            Log.d("loading","refresh details")
             val task = listOf(
                 async {
                     list.add(repository.getDetailsById(id1))

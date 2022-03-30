@@ -8,8 +8,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.lorempicsum.network.GetDetailsByIdResponse
-import com.example.lorempicsum.network.NetworkLayer
-import kotlinx.coroutines.*
 import java.text.DateFormat
 import java.util.*
 
@@ -30,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         date = findViewById(R.id.date)
-        date.setText(DateFormat.getDateInstance(DateFormat.FULL).format(Calendar.getInstance().time))
+        date.text = DateFormat.getDateInstance(DateFormat.FULL).format(Calendar.getInstance().time)
 
         pictureDetails = mutableListOf()
 

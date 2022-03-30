@@ -1,5 +1,6 @@
 package com.example.lorempicsum
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -20,6 +21,7 @@ class SharedViewModel:ViewModel() {
     fun refreshDetails(id1: Int,id2: Int,id3: Int){
         val list = mutableListOf<GetDetailsByIdResponse?>()
         viewModelScope.launch {
+            Log.d("loading","refresh details")
             val task = listOf(
                 async {
                     list.add(repository.getDetailsById(id1))

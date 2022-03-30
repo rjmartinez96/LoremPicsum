@@ -14,17 +14,19 @@
         android:gravity="center"
         android:paddingTop="10dp"
         android:textSize="12sp"
-        android:textColor="@color/black"/>
+        android:textColor="@color/black"
+        android:textStyle="bold"/>
 
     <DigitalClock
         android:layout_below="@id/date"
         android:id="@+id/clock"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="8dp"
+        android:paddingBottom="6dp"
         android:gravity="center"
-        android:textSize="12sp"
-        android:textColor="@color/black"/>
+        android:textSize="14sp"
+        android:textColor="@color/black"
+        android:textStyle="bold"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_below="@id/clock"

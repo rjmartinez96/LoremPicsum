@@ -3,6 +3,7 @@ package com.example.lorempicsum
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
+import androidx.lifecycle.Observer
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,7 +13,6 @@ import com.example.lorempicsum.network.NetworkLayer
 import kotlinx.coroutines.*
 import java.text.DateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 class MainActivity : AppCompatActivity() {
@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = pictureAdapter
 
-        getRandomPictures()
+        onListItemClick(0)
     }
 
     private val ioScope = CoroutineScope(Dispatchers.IO + Job())
@@ -66,21 +66,26 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadPictures(id1: Int, id2: Int, id3: Int){
         viewModel.refreshDetails(id1,id2,id3)
-        viewModel.detailsByLiveData.observe(this){ responseList ->
-            responseList.forEachIndexed { index, response ->
-                if(response == null){
-                    Log.e("getPictureDetailsById:","FAILED")
-                    return@observe
-                }
-                response.let {
-                    Log.d("Pic loaded",response.id)
-                    if(pictureDetails.size < 3){
-                        pictureDetails.add(response)
-                    } else pictureDetails.set(index, response)
-                    pictureAdapter.notifyItemChanged(index)
+
+        viewModel.detailsByLiveData.observe(this, object: Observer<List<GetDetailsByIdResponse?>> {
+            override fun onChanged(responseList: List<GetDetailsByIdResponse?>) {
+                viewModel.detailsByLiveData.removeObserver(this)
+                Log.d("Pics loaded",responseList.toString())
+                responseList.forEachIndexed { index, response ->
+                    if(response == null){
+                        Log.e("getPictureDetailsById:","FAILED")
+                        return
+                    }
+                    response.let {
+                        Log.d("Pic loaded",response.id)
+                        if(pictureDetails.size < 3){
+                            pictureDetails.add(response)
+                        } else pictureDetails.set(index, response)
+                        pictureAdapter.notifyItemChanged(index)
+                    }
                 }
             }
-        }
+        })
     }
 
     private fun onListItemClick(position: Int) {
